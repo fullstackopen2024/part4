@@ -2,7 +2,7 @@ const dummy = (blogs) => {
   return 1;
 }
 
-const totalLikes =  (blogs) => {
+const totalLikes = (blogs) => {
   if (blogs === 'undefined') {
     return 0;
   }
@@ -11,6 +11,15 @@ const totalLikes =  (blogs) => {
     : 0;
 }
 
+const favoriteBlog = (blogs) => {
+  if (blogs === 'undefined') {
+    return undefined;
+  }
+  return blogs.length > 0
+    ? blogs.reduce((acc, current) => current.likes > acc.likes ? current : acc, blogs[0])
+    : undefined;
+}
+
 module.exports = {
-  dummy, totalLikes
+  dummy, totalLikes, favoriteBlog
 }
