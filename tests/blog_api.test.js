@@ -92,6 +92,34 @@ test('missing likes property defaults to zero', async () => {
   assert.strictEqual(savedBlog.likes, 0)
 })
 
+test('missing title for blog returns bad request', async () => {
+  const missingTitle = {
+    "author": "Vlad R",
+    "url": "www.fullstackopen.com",
+  }
+
+  await api.post('/api/blogs')
+    .send(missingTitle)
+    .expect(400)
+
+  const blogsInDatabase = await api.get('/api/blogs')
+  assert.strictEqual(blogsInDatabase.body.length, initialBlogs.length)
+})
+
+test('missing url for blog returns bad request', async () => {
+  const missingUrl = {
+    "title": "How to test node apps",
+    "author": "Vlad R",
+  }
+
+  await api.post('/api/blogs')
+    .send(missingUrl)
+    .expect(400)
+
+  const blogsInDatabase = await api.get('/api/blogs')
+  assert.strictEqual(blogsInDatabase.body.length, initialBlogs.length)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
