@@ -72,6 +72,26 @@ test('new blog is created', async () => {
   assert.deepStrictEqual(savedBlog, newBlog)
 })
 
+test('missing likes property defaults to zero', async () => {
+  const missingLikes = {
+    "title": "How to test node apps",
+    "author": "Vlad R",
+    "url": "www.fullstackopen.com",
+  }
+
+  await api.post('/api/blogs')
+    .send(missingLikes)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+  const savedBlog = response.body.find(blog => blog.title === 'How to test node apps')
+
+  assert.strictEqual(response.body.length, initialBlogs.length + 1)
+  assert.strictEqual(savedBlog.hasOwnProperty('likes'), true)
+  assert.strictEqual(savedBlog.likes, 0)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
