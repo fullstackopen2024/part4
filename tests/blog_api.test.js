@@ -30,24 +30,46 @@ beforeEach(async () => {
   await blogObject.save()
 })
 
-test.only('blogs are returned as json', async () => {
+test('blogs are returned as json', async () => {
   await api
     .get('/api/blogs')
     .expect(200)
     .expect('Content-Type', /application\/json/)
 })
 
-test.only('there are two notes', async () => {
+test('there are two notes', async () => {
   const response = await api.get('/api/blogs')
 
   assert.strictEqual(response.body.length, initialBlogs.length)
 })
 
-test.only('has unique property id', async () => {
+test('has unique property id', async () => {
   const response = await api.get('/api/blogs')
   const firstBlog = response.body[0]
 
   assert.strictEqual(firstBlog.hasOwnProperty('id'), true)
+})
+
+test('new blog is created', async () => {
+  const newBlog = {
+    "title": "How to freelance",
+    "author": "Vlad R",
+    "url": "www.google.com",
+    "likes": 20,
+  }
+
+  await api.post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+  const savedBlog = response.body.find(blog => blog.title === 'How to freelance')
+
+  assert.strictEqual(response.body.length, initialBlogs.length + 1)
+  assert.strictEqual(savedBlog.hasOwnProperty('id'), true)
+  delete savedBlog.id
+  assert.deepStrictEqual(savedBlog, newBlog)
 })
 
 after(async () => {
