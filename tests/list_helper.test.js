@@ -117,3 +117,20 @@ describe('most blogs', () => {
     })
   })
 })
+
+describe('most likes', () => {
+  test('when list has only one blog, favourite blog should be that', () => {
+    assert.deepStrictEqual(listHelper.mostLikes(listWithOneBlog), { author: 'Edsger W. Dijkstra', likes: 5 })
+  })
+
+  test('of empty list is undefined', () => {
+    assert.strictEqual(listHelper.mostLikes([]), undefined)
+  })
+
+  test('of a bigger list is calculated right', () => {
+    assert.deepStrictEqual(listHelper.mostLikes(blogs), {
+      author: "Edsger W. Dijkstra",
+      likes: 17
+    })
+  })
+})
