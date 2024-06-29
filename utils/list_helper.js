@@ -20,6 +20,33 @@ const favoriteBlog = (blogs) => {
     : undefined;
 }
 
+const mostBlogs = (blogs) => {
+  if (blogs === 'undefined') {
+    return undefined;
+  }
+
+  if (blogs.length === 0) {
+    return undefined;
+  }
+
+  let listOfAuthors = {};
+  blogs.forEach(blog => {
+    if (listOfAuthors.hasOwnProperty(blog.author)) {
+      listOfAuthors[blog.author]++
+    } else {
+      listOfAuthors[blog.author] = 1;
+    }
+  })
+
+  let values = Object.values(listOfAuthors);
+  let max = Math.max(...values);
+
+  return {
+    author: Object.keys(listOfAuthors).find(key => listOfAuthors[key] === max),
+    blogs: max
+  }
+}
+
 module.exports = {
-  dummy, totalLikes, favoriteBlog
+  dummy, totalLikes, favoriteBlog, mostBlogs
 }
