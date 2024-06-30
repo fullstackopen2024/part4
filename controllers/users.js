@@ -1,9 +1,17 @@
 const usersRouter = require('express').Router()
-const User = require('../models/user')
+const { User, USER_VALIDATION } = require('../models/user')
 const bcrypt = require("bcrypt");
+
+const validateUser = (user, response) => {
+  if (!USER_VALIDATION.PASSWORD_TOO_SHORT.validate(user)) {
+    response.status(400).json({ error: USER_VALIDATION.PASSWORD_TOO_SHORT.message })
+  }
+  return true;
+}
 
 usersRouter.post('/', async (request, response) => {
   const { username, name, password } = request.body
+  validateUser({ username, name, password }, response)
 
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(password, saltRounds)

@@ -4,29 +4,15 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const helper = require('./test_helper')
 
 const api = supertest(app)
 
-const initialBlogs = [
-  {
-    title: "React patterns",
-    author: "Michael Chan",
-    url: "https://reactpatterns.com/",
-    likes: 7
-  },
-  {
-    title: "Go To Statement Considered Harmful",
-    author: "Edsger W. Dijkstra",
-    url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
-    likes: 5,
-  },
-]
-
 beforeEach(async () => {
   await Blog.deleteMany({})
-  let blogObject = new Blog(initialBlogs[0])
+  let blogObject = new Blog(helper.initialBlogs[0])
   await blogObject.save()
-  blogObject = new Blog(initialBlogs[1])
+  blogObject = new Blog(helper.initialBlogs[1])
   await blogObject.save()
 })
 
@@ -40,7 +26,7 @@ test('blogs are returned as json', async () => {
 test('there are two notes', async () => {
   const response = await api.get('/api/blogs')
 
-  assert.strictEqual(response.body.length, initialBlogs.length)
+  assert.strictEqual(response.body.length, helper.initialBlogs.length)
 })
 
 test('has unique property id', async () => {
@@ -66,7 +52,7 @@ test('new blog is created', async () => {
   const response = await api.get('/api/blogs')
   const savedBlog = response.body.find(blog => blog.title === 'How to freelance')
 
-  assert.strictEqual(response.body.length, initialBlogs.length + 1)
+  assert.strictEqual(response.body.length, helper.initialBlogs.length + 1)
   assert.strictEqual(savedBlog.hasOwnProperty('id'), true)
   delete savedBlog.id
   assert.deepStrictEqual(savedBlog, newBlog)
@@ -87,7 +73,7 @@ test('missing likes property defaults to zero', async () => {
   const response = await api.get('/api/blogs')
   const savedBlog = response.body.find(blog => blog.title === 'How to test node apps')
 
-  assert.strictEqual(response.body.length, initialBlogs.length + 1)
+  assert.strictEqual(response.body.length, helper.initialBlogs.length + 1)
   assert.strictEqual(savedBlog.hasOwnProperty('likes'), true)
   assert.strictEqual(savedBlog.likes, 0)
 })
@@ -103,7 +89,7 @@ test('missing title for blog returns bad request', async () => {
     .expect(400)
 
   const blogsInDatabase = await api.get('/api/blogs')
-  assert.strictEqual(blogsInDatabase.body.length, initialBlogs.length)
+  assert.strictEqual(blogsInDatabase.body.length, helper.initialBlogs.length)
 })
 
 test('missing url for blog returns bad request', async () => {
@@ -117,7 +103,7 @@ test('missing url for blog returns bad request', async () => {
     .expect(400)
 
   const blogsInDatabase = await api.get('/api/blogs')
-  assert.strictEqual(blogsInDatabase.body.length, initialBlogs.length)
+  assert.strictEqual(blogsInDatabase.body.length, helper.initialBlogs.length)
 })
 
 test('delete react patterns blogs is successful', async () => {
@@ -129,7 +115,7 @@ test('delete react patterns blogs is successful', async () => {
     .expect(204)
 
   const blogsAfterDeletion = await api.get('/api/blogs');
-  assert.strictEqual(blogsAfterDeletion.body.length, initialBlogs.length - 1)
+  assert.strictEqual(blogsAfterDeletion.body.length, helper.initialBlogs.length - 1)
   assert.strictEqual(blogsAfterDeletion.body.find(blog => blog.title === 'React patterns'), undefined)
 })
 
@@ -146,7 +132,7 @@ test('update a blog is successful', async () => {
 
   let blogsAfterUpdate = await api.get('/api/blogs')
   blogsAfterUpdate = blogsAfterUpdate.body.map(blog => blog.likes)
-  assert.strictEqual(blogsAfterUpdate.length, initialBlogs.length)
+  assert.strictEqual(blogsAfterUpdate.length, helper.initialBlogs.length)
   assert.strictEqual(blogsAfterUpdate.includes(888), true)
 })
 
