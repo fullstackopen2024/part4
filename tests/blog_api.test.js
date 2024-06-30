@@ -133,6 +133,23 @@ test('delete react patterns blogs is successful', async () => {
   assert.strictEqual(blogsAfterDeletion.body.find(blog => blog.title === 'React patterns'), undefined)
 })
 
+test('update a blog is successful', async () => {
+  const response = await api.get('/api/blogs')
+  const initialBlog = response.body[0];
+  initialBlog.likes = 888
+
+  await api
+    .put(`/api/blogs/${initialBlog.id}`)
+    .send(initialBlog)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  let blogsAfterUpdate = await api.get('/api/blogs')
+  blogsAfterUpdate = blogsAfterUpdate.body.map(blog => blog.likes)
+  assert.strictEqual(blogsAfterUpdate.length, initialBlogs.length)
+  assert.strictEqual(blogsAfterUpdate.includes(888), true)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
