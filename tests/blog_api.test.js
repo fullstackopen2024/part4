@@ -120,6 +120,19 @@ test('missing url for blog returns bad request', async () => {
   assert.strictEqual(blogsInDatabase.body.length, initialBlogs.length)
 })
 
+test('delete react patterns blogs is successful', async () => {
+  const response = await api.get('/api/blogs')
+  const reactPatternsBlog = response.body.find(blog => blog.title === 'React patterns')
+
+  await api
+    .delete(`/api/blogs/${reactPatternsBlog.id}`)
+    .expect(204)
+
+  const blogsAfterDeletion = await api.get('/api/blogs');
+  assert.strictEqual(blogsAfterDeletion.body.length, initialBlogs.length - 1)
+  assert.strictEqual(blogsAfterDeletion.body.find(blog => blog.title === 'React patterns'), undefined)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
