@@ -17,7 +17,13 @@ const userSchema = new mongoose.Schema({
     minLength: [3, USER_VALIDATION.USERNAME_TOO_SHORT]
   },
   passwordHash: String,
-  name: String
+  name: String,
+  blogs: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Blog'
+    }
+  ]
 })
 
 
